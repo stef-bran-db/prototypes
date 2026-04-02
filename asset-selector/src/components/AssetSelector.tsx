@@ -463,8 +463,8 @@ export function AssetSelector({
           }}
           className={`px-2.5 py-1 text-xs rounded-full transition-colors whitespace-nowrap shrink-0
             ${activeSection === "forYou"
-              ? "bg-blue-100 text-blue-700 font-medium"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              ? "bg-blue-50 text-blue-700 border border-blue-200 font-medium"
+              : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
             }`}
         >
           For you
@@ -477,8 +477,8 @@ export function AssetSelector({
           }}
           className={`px-2.5 py-1 text-xs rounded-full transition-colors whitespace-nowrap shrink-0
             ${activeSection === "all"
-              ? "bg-blue-100 text-blue-700 font-medium"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              ? "bg-blue-50 text-blue-700 border border-blue-200 font-medium"
+              : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
             }`}
         >
           All
@@ -497,8 +497,8 @@ export function AssetSelector({
                 }}
                 className={`px-2.5 py-1 text-xs rounded-full transition-colors whitespace-nowrap shrink-0
                   ${activeSection === pill.key
-                    ? "bg-blue-100 text-blue-700 font-medium"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-blue-50 text-blue-700 border border-blue-200 font-medium"
+                    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                   }`}
               >
                 {pill.label}
