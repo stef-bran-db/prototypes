@@ -422,21 +422,22 @@ export function AssetSelector({
               setActiveSection("forYou");
               setActiveQuickFilters(new Set());
             }}
-            className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full font-medium shrink-0 border border-blue-200 hover:bg-blue-100"
+            className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full font-medium shrink-0 border border-blue-200 hover:bg-blue-100 animate-slide-in"
           >
             <AssetIcon type={activeSection as AssetType} size={11} />
             {typeLabels[activeSection] || activeSection}
             <X size={10} />
           </button>
-          {availableQuickFilters.map((filter) => (
+          {availableQuickFilters.map((filter, i) => (
             <button
               key={filter.key}
               onClick={() => toggleQuickFilter(filter.key)}
-              className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full transition-colors whitespace-nowrap shrink-0 border cursor-pointer
+              className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full transition-colors whitespace-nowrap shrink-0 border cursor-pointer animate-fade-in
                 ${activeQuickFilters.has(filter.key)
                   ? "bg-blue-50 text-blue-700 border-blue-200 font-medium"
                   : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                 }`}
+              style={{ animationDelay: `${(i + 1) * 50}ms` }}
             >
               {filter.label}
               {activeQuickFilters.has(filter.key) && <X size={10} />}
@@ -445,7 +446,8 @@ export function AssetSelector({
           {activeQuickFilters.size > 0 && (
             <button
               onClick={() => setActiveQuickFilters(new Set())}
-              className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 whitespace-nowrap shrink-0"
+              className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 whitespace-nowrap shrink-0 animate-fade-in"
+              style={{ animationDelay: `${(availableQuickFilters.length + 1) * 50}ms` }}
             >
               Clear all
             </button>
