@@ -552,12 +552,10 @@ export function AssetSelector({
           <span className="font-medium shrink-0">{selectedAssets.length} selected</span>
           <div className="flex gap-1 flex-1 overflow-x-auto flex-nowrap scrollbar-hide" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
             {selectedAssets.map((a) => (
-              <span key={a.id} className="inline-flex items-center gap-1 px-2 py-0.5 bg-white border border-gray-200 rounded-full whitespace-nowrap shrink-0">
+              <span key={a.id} className="inline-flex items-center gap-1 px-2 py-0.5 bg-white border border-gray-200 rounded-full whitespace-nowrap shrink-0 cursor-pointer hover:border-gray-300" onClick={() => toggleAsset(a)}>
                 <AssetIcon type={a.type} size={10} />
                 <span className="max-w-[100px] truncate">{a.name}</span>
-                <button onClick={() => toggleAsset(a)} className="text-gray-400 hover:text-gray-600">
-                  <X size={10} />
-                </button>
+                <X size={10} className="text-gray-400 hover:text-gray-600" />
               </span>
             ))}
           </div>
