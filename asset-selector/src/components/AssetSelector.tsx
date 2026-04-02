@@ -19,14 +19,12 @@ const quickFiltersForType: Record<string, QuickFilter[]> = {
   table: [
     { key: "recent", label: "Recently queried", match: (a) => /queried/i.test(a.reason ?? "") },
     { key: "popular", label: "Popular", match: (a) => /popular|teammates/i.test(a.reason ?? "") },
-    { key: "dashboards", label: "Used in dashboards", match: (a) => /dashboard/i.test(a.reason ?? "") },
-    { key: "joined", label: "Frequently joined", match: (a) => /joined/i.test(a.reason ?? "") },
     { key: "owned", label: "Owned by me", match: (a) => /finance|product/i.test(a.path) },
+    { key: "recent-created", label: "Recently created", match: (a) => /recently created/i.test(a.reason ?? "") },
   ],
   view: [
     { key: "recent", label: "Recently queried", match: (a) => /queried/i.test(a.reason ?? "") },
     { key: "popular", label: "Popular", match: (a) => /popular|teammates/i.test(a.reason ?? "") },
-    { key: "dashboards", label: "Used in dashboards", match: (a) => /dashboard/i.test(a.reason ?? "") },
     { key: "owned", label: "Owned by me", match: (a) => /finance|product/i.test(a.path) },
   ],
   notebook: [
