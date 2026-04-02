@@ -461,7 +461,7 @@ export function AssetSelector({
             setActiveSection("forYou");
             setHierarchyPath([]);
           }}
-          className={`px-2.5 py-1 text-xs rounded-full transition-colors whitespace-nowrap shrink-0
+          className={`px-2.5 py-0.5 text-xs rounded-full transition-colors whitespace-nowrap shrink-0
             ${activeSection === "forYou"
               ? "bg-blue-50 text-blue-700 border border-blue-200 font-medium"
               : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
@@ -475,7 +475,7 @@ export function AssetSelector({
             setActiveSection("all");
             setHierarchyPath([]);
           }}
-          className={`px-2.5 py-1 text-xs rounded-full transition-colors whitespace-nowrap shrink-0
+          className={`px-2.5 py-0.5 text-xs rounded-full transition-colors whitespace-nowrap shrink-0
             ${activeSection === "all"
               ? "bg-blue-50 text-blue-700 border border-blue-200 font-medium"
               : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
@@ -495,7 +495,7 @@ export function AssetSelector({
                   setSortMode("relevance");
                   setActiveQuickFilters(new Set());
                 }}
-                className={`px-2.5 py-1 text-xs rounded-full transition-colors whitespace-nowrap shrink-0
+                className={`px-2.5 py-0.5 text-xs rounded-full transition-colors whitespace-nowrap shrink-0
                   ${activeSection === pill.key
                     ? "bg-blue-50 text-blue-700 border border-blue-200 font-medium"
                     : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
