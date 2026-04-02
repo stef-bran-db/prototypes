@@ -122,9 +122,9 @@ export default function Home() {
                 setScenario(key);
                 setLastAction("");
               }}
-              className={`px-3 py-2 text-sm rounded-lg border transition-colors
+              className={`px-3 py-2 text-sm rounded-lg border transition-colors flex-1
                 ${scenario === key
-                  ? "bg-white border-blue-300 text-blue-700 shadow-sm font-medium"
+                  ? "bg-white border-blue-300 text-blue-700 shadow-sm"
                   : "bg-white/50 border-gray-200 text-gray-600 hover:bg-white hover:border-gray-300"
                 }`}
             >
