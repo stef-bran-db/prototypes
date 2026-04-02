@@ -432,7 +432,7 @@ export function AssetSelector({
             <button
               key={filter.key}
               onClick={() => toggleQuickFilter(filter.key)}
-              className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full transition-colors whitespace-nowrap shrink-0 border
+              className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full transition-colors whitespace-nowrap shrink-0 border cursor-pointer
                 ${activeQuickFilters.has(filter.key)
                   ? "bg-blue-50 text-blue-700 border-blue-200 font-medium"
                   : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
