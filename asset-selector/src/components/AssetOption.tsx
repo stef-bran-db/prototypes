@@ -16,7 +16,7 @@ export function AssetOption({ asset, selected, multiSelect, onClick, showReason 
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-2 px-3 h-8 text-sm text-left transition-colors rounded-sm
+      className={`w-full flex items-center gap-2 px-3 h-8 text-sm text-left transition-colors rounded-sm cursor-pointer
         ${selected ? "bg-blue-50" : "hover:bg-gray-50"}
       `}
     >
