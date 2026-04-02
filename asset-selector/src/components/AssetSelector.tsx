@@ -437,7 +437,7 @@ export function AssetSelector({
                   ? "bg-blue-50 text-blue-700 border-blue-200 font-medium"
                   : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                 }`}
-              style={{ animationDelay: `${(i + 1) * 50}ms` }}
+              style={{ animationDelay: `${(i + 1) * 80}ms` }}
             >
               {filter.label}
               {activeQuickFilters.has(filter.key) && <X size={10} />}
@@ -447,7 +447,7 @@ export function AssetSelector({
             <button
               onClick={() => setActiveQuickFilters(new Set())}
               className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 whitespace-nowrap shrink-0 animate-fade-in"
-              style={{ animationDelay: `${(availableQuickFilters.length + 1) * 50}ms` }}
+              style={{ animationDelay: `${(availableQuickFilters.length + 1) * 80}ms` }}
             >
               Clear all
             </button>
