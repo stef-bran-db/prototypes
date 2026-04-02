@@ -414,99 +414,140 @@ export function AssetSelector({
   };
 
   const renderPillBar = () => {
-    if (isTypeView) {
-      return (
-        <div className="flex items-center gap-1 flex-nowrap overflow-x-auto scrollbar-hide h-[24px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-          <button
-            onClick={() => {
-              setActiveSection("forYou");
-              setActiveQuickFilters(new Set());
+    const allCorePills = [
+      { key: "forYou" as Section, label: "For you" },
+      { key: "all" as Section, label: "All" },
+    ];
+
+    return (
+      <div className="flex items-center gap-1 flex-nowrap overflow-x-auto scrollbar-hide h-[24px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+        {/* Core pills — collapse when a type is selected */}
+        {allCorePills.map((pill) => (
+          <div
+            key={pill.key}
+            className="pill-collapse shrink-0"
+            style={{
+              maxWidth: isTypeView ? 0 : 200,
+              opacity: isTypeView ? 0 : 1,
+              overflow: "hidden",
+              transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease, padding 0.3s ease",
+              marginRight: isTypeView ? 0 : undefined,
             }}
-            className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full font-medium shrink-0 border border-blue-200 hover:bg-blue-100 animate-slide-in"
           >
-            <AssetIcon type={activeSection as AssetType} size={11} />
-            {typeLabels[activeSection] || activeSection}
-            <X size={10} />
-          </button>
-          {availableQuickFilters.map((filter, i) => (
             <button
-              key={filter.key}
+              onClick={() => {
+                setActiveSection(pill.key);
+                setHierarchyPath([]);
+                setActiveQuickFilters(new Set());
+              }}
+              className={`px-2.5 py-0.5 text-xs rounded-full transition-colors whitespace-nowrap
+                ${activeSection === pill.key
+                  ? "bg-blue-50 text-blue-700 border border-blue-200 font-medium"
+                  : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                }`}
+            >
+              {pill.label}
+            </button>
+          </div>
+        ))}
+
+        {/* Divider between core and type pills — hide when type is selected */}
+        <div
+          className="h-4 bg-gray-200 shrink-0"
+          style={{
+            width: isTypeView ? 0 : 1,
+            marginLeft: isTypeView ? 0 : 4,
+            marginRight: isTypeView ? 0 : 4,
+            opacity: isTypeView ? 0 : 1,
+            transition: "all 0.3s ease",
+          }}
+        />
+
+        {/* Type pills */}
+        {typePills.map((pill) => {
+          const isActive = activeSection === pill.key;
+          const isOtherTypeActive = isTypeView && !isActive;
+
+          return (
+            <div
+              key={pill.key}
+              className="shrink-0"
+              style={{
+                maxWidth: isOtherTypeActive ? 0 : 200,
+                opacity: isOtherTypeActive ? 0 : 1,
+                overflow: "hidden",
+                transition: "max-width 0.3s ease, opacity 0.2s ease",
+              }}
+            >
+              {isActive ? (
+                <button
+                  onClick={() => {
+                    setActiveSection("forYou");
+                    setActiveQuickFilters(new Set());
+                  }}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full font-medium border border-blue-200 hover:bg-blue-100 whitespace-nowrap cursor-pointer"
+                >
+                  <AssetIcon type={pill.key as AssetType} size={11} />
+                  {pill.label}
+                  <X size={10} />
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setActiveSection(pill.key);
+                    setHierarchyPath([]);
+                    setSortMode("relevance");
+                    setActiveQuickFilters(new Set());
+                  }}
+                  className="px-2.5 py-0.5 text-xs rounded-full whitespace-nowrap bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 cursor-pointer"
+                >
+                  {pill.label}
+                </button>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Divider before type pills — only show when not in type view */}
+        {typePills.length > 0 && !isTypeView && (
+          <div className="w-0" />
+        )}
+
+        {/* Quick filters — appear when a type is selected */}
+        {availableQuickFilters.map((filter, i) => (
+          <div
+            key={filter.key}
+            className="shrink-0"
+            style={{
+              maxWidth: isTypeView ? 200 : 0,
+              opacity: isTypeView ? 1 : 0,
+              overflow: "hidden",
+              transition: "max-width 0.35s ease, opacity 0.3s ease",
+              transitionDelay: isTypeView ? `${(i + 1) * 80}ms` : "0ms",
+            }}
+          >
+            <button
               onClick={() => toggleQuickFilter(filter.key)}
-              className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full transition-colors whitespace-nowrap shrink-0 border cursor-pointer animate-fade-in
+              className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full whitespace-nowrap border cursor-pointer
                 ${activeQuickFilters.has(filter.key)
                   ? "bg-blue-50 text-blue-700 border-blue-200 font-medium"
                   : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                 }`}
-              style={{ animationDelay: `${(i + 1) * 80}ms` }}
             >
               {filter.label}
               {activeQuickFilters.has(filter.key) && <X size={10} />}
             </button>
-          ))}
-          {activeQuickFilters.size > 0 && (
-            <button
-              onClick={() => setActiveQuickFilters(new Set())}
-              className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 whitespace-nowrap shrink-0 animate-fade-in"
-              style={{ animationDelay: `${(availableQuickFilters.length + 1) * 80}ms` }}
-            >
-              Clear all
-            </button>
-          )}
-        </div>
-      );
-    }
+          </div>
+        ))}
 
-    return (
-      <div className="flex items-center gap-1 flex-nowrap overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-        <button
-          onClick={() => {
-            setActiveSection("forYou");
-            setHierarchyPath([]);
-          }}
-          className={`px-2.5 py-0.5 text-xs rounded-full transition-colors whitespace-nowrap shrink-0
-            ${activeSection === "forYou"
-              ? "bg-blue-50 text-blue-700 border border-blue-200 font-medium"
-              : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
-            }`}
-        >
-          For you
-        </button>
-        <div className="w-px h-4 bg-gray-200 mx-1 shrink-0" />
-        <button
-          onClick={() => {
-            setActiveSection("all");
-            setHierarchyPath([]);
-          }}
-          className={`px-2.5 py-0.5 text-xs rounded-full transition-colors whitespace-nowrap shrink-0
-            ${activeSection === "all"
-              ? "bg-blue-50 text-blue-700 border border-blue-200 font-medium"
-              : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
-            }`}
-        >
-          All
-        </button>
-        {typePills.length > 0 && (
-          <>
-            <div className="w-px h-4 bg-gray-200 mx-1 shrink-0" />
-            {typePills.map((pill) => (
-              <button
-                key={pill.key}
-                onClick={() => {
-                  setActiveSection(pill.key);
-                  setHierarchyPath([]);
-                  setSortMode("relevance");
-                  setActiveQuickFilters(new Set());
-                }}
-                className={`px-2.5 py-0.5 text-xs rounded-full transition-colors whitespace-nowrap shrink-0
-                  ${activeSection === pill.key
-                    ? "bg-blue-50 text-blue-700 border border-blue-200 font-medium"
-                    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
-                  }`}
-              >
-                {pill.label}
-              </button>
-            ))}
-          </>
+        {/* Clear all */}
+        {activeQuickFilters.size > 0 && (
+          <button
+            onClick={() => setActiveQuickFilters(new Set())}
+            className="px-2 py-0.5 text-xs text-gray-500 hover:text-gray-700 whitespace-nowrap shrink-0 cursor-pointer"
+          >
+            Clear all
+          </button>
         )}
       </div>
     );
