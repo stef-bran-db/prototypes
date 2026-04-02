@@ -79,6 +79,10 @@ export default function Home() {
             title="Add assets to Finance domain"
             forYouAssets={domainForYouAssets}
             hierarchy={domainHierarchy}
+            hierarchies={{
+              "Catalog": domainHierarchy,
+              "Workspace": wsHierarchy,
+            }}
             typeFilterAssets={{
               table: domainTablesAssets,
               dashboard: domainDashboardsAssets,

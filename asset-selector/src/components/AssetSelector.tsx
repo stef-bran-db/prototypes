@@ -62,6 +62,7 @@ interface AssetSelectorProps {
   forYouAssets: Asset[];
   forYouLabel?: string;
   hierarchy: HierarchyNode[];
+  hierarchies?: Record<string, HierarchyNode[]>;
   typeFilterAssets?: Record<string, Asset[]>;
   selectableTypes: AssetType[];
   multiSelect?: boolean;
@@ -102,6 +103,7 @@ export function AssetSelector({
   forYouAssets,
   forYouLabel,
   hierarchy,
+  hierarchies,
   typeFilterAssets,
   selectableTypes,
   multiSelect = false,
@@ -118,7 +120,26 @@ export function AssetSelector({
   const [activeQuickFilters, setActiveQuickFilters] = useState<Set<string>>(new Set());
 
   const isSearching = searchQuery.length > 0;
-  const isTypeView = activeSection !== "forYou" && activeSection !== "all";
+  const isHierarchyView = activeSection === "all" || activeSection.startsWith("hierarchy:");
+  const isTypeView = activeSection !== "forYou" && !isHierarchyView;
+
+  const hierarchyPills = useMemo(() => {
+    if (hierarchies) {
+      return Object.keys(hierarchies).map((key) => ({
+        key: `hierarchy:${key}` as Section,
+        label: key,
+      }));
+    }
+    return [{ key: "all" as Section, label: "All" }];
+  }, [hierarchies]);
+
+  const activeHierarchy = useMemo(() => {
+    if (activeSection.startsWith("hierarchy:")) {
+      const key = activeSection.replace("hierarchy:", "");
+      return hierarchies?.[key] ?? hierarchy;
+    }
+    return hierarchy;
+  }, [activeSection, hierarchies, hierarchy]);
 
   const availableQuickFilters = useMemo(() => {
     if (!isTypeView) return [];
@@ -126,7 +147,7 @@ export function AssetSelector({
   }, [activeSection, isTypeView]);
 
   const currentHierarchyChildren = useMemo(() => {
-    if (hierarchyPath.length === 0) return hierarchy;
+    if (hierarchyPath.length === 0) return activeHierarchy;
     const current = hierarchyPath[hierarchyPath.length - 1];
     return current.children ?? [];
   }, [hierarchy, hierarchyPath]);
@@ -282,7 +303,7 @@ export function AssetSelector({
       );
     }
 
-    if (activeSection === "all") {
+    if (isHierarchyView) {
       return (
         <div className="flex-1 overflow-auto">
           <div className="px-3 py-1 flex items-center gap-1 text-xs text-gray-500">
@@ -416,7 +437,7 @@ export function AssetSelector({
   const renderPillBar = () => {
     const allCorePills = [
       { key: "forYou" as Section, label: "For you" },
-      { key: "all" as Section, label: "All" },
+      ...hierarchyPills,
     ];
 
     return (
