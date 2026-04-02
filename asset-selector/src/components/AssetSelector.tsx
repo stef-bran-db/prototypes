@@ -416,23 +416,6 @@ export function AssetSelector({
   };
 
   const renderPillBar = () => {
-    if (isSearching && isTypeView) {
-      return (
-        <div className="flex items-center gap-1.5 text-xs text-gray-500">
-          <span>Searching in</span>
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full font-medium">
-            <AssetIcon type={activeSection as AssetType} size={12} />
-            {typeLabels[activeSection] || activeSection}
-            <button onClick={() => setActiveSection("forYou")} className="ml-0.5 hover:text-blue-900">
-              <X size={10} />
-            </button>
-          </span>
-        </div>
-      );
-    }
-
-    if (isSearching) return null;
-
     if (isTypeView) {
       return (
         <div className="flex items-center gap-1 flex-nowrap overflow-x-auto scrollbar-hide h-[24px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
