@@ -441,18 +441,18 @@ export function AssetSelector({
     ];
 
     return (
-      <div className="flex items-center gap-1 flex-nowrap overflow-x-auto scrollbar-hide h-[24px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+      <div className="flex items-center flex-nowrap overflow-x-auto scrollbar-hide h-[24px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
         {/* Core pills — collapse when a type is selected */}
         {allCorePills.map((pill) => (
           <div
             key={pill.key}
-            className="pill-collapse shrink-0"
+            className="shrink-0"
             style={{
               maxWidth: isTypeView ? 0 : 200,
               opacity: isTypeView ? 0 : 1,
               overflow: "hidden",
-              transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease, padding 0.3s ease",
-              marginRight: isTypeView ? 0 : undefined,
+              marginRight: isTypeView ? 0 : 4,
+              transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease",
             }}
           >
             <button
@@ -479,8 +479,8 @@ export function AssetSelector({
             width: isTypeView ? 0 : 1,
             marginLeft: isTypeView ? 0 : 4,
             marginRight: isTypeView ? 0 : 4,
-            opacity: isTypeView ? 0 : 1,
-            transition: "all 0.3s ease",
+            opacity: isTypeView ? 0 : 0.5,
+            transition: "all 0.35s ease",
           }}
         />
 
@@ -497,7 +497,8 @@ export function AssetSelector({
                 maxWidth: isOtherTypeActive ? 0 : 200,
                 opacity: isOtherTypeActive ? 0 : 1,
                 overflow: "hidden",
-                transition: "max-width 0.3s ease, opacity 0.2s ease",
+                marginRight: isOtherTypeActive ? 0 : 4,
+                transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease",
               }}
             >
               {isActive ? (
@@ -543,7 +544,8 @@ export function AssetSelector({
               maxWidth: isTypeView ? 200 : 0,
               opacity: isTypeView ? 1 : 0,
               overflow: "hidden",
-              transition: "max-width 0.35s ease, opacity 0.3s ease",
+              marginRight: isTypeView ? 4 : 0,
+              transition: "max-width 0.35s ease, opacity 0.3s ease, margin 0.35s ease",
               transitionDelay: isTypeView ? `${(i + 1) * 80}ms` : "0ms",
             }}
           >
