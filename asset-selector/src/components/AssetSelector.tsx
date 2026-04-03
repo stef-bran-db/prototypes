@@ -17,14 +17,14 @@ interface QuickFilter {
 
 const quickFiltersForType: Record<string, QuickFilter[]> = {
   table: [
-    { key: "recent", label: "Recently queried", match: (a) => /queried/i.test(a.reason ?? "") },
-    { key: "popular", label: "Popular", match: (a) => /popular|teammates/i.test(a.reason ?? "") },
+    { key: "recent", label: "Recently queried", match: (a) => /queried.*(?:ago|yesterday|last week)/i.test(a.reason ?? "") || /queried \d+ times/i.test(a.reason ?? "") },
+    { key: "popular", label: "Popular", match: (a) => /popular/i.test(a.reason ?? "") },
     { key: "owned", label: "Owned by me", match: (a) => /finance|product/i.test(a.path) },
-    { key: "frequent", label: "Frequently queried", match: (a) => /times this week|teammates/i.test(a.reason ?? "") },
+    { key: "frequent", label: "Frequently queried", match: (a) => /times this week/i.test(a.reason ?? "") },
   ],
   view: [
-    { key: "recent", label: "Recently queried", match: (a) => /queried/i.test(a.reason ?? "") },
-    { key: "popular", label: "Popular", match: (a) => /popular|teammates/i.test(a.reason ?? "") },
+    { key: "recent", label: "Recently queried", match: (a) => /queried.*(?:ago|yesterday|last week)/i.test(a.reason ?? "") || /queried \d+ times/i.test(a.reason ?? "") },
+    { key: "popular", label: "Popular", match: (a) => /popular/i.test(a.reason ?? "") },
     { key: "owned", label: "Owned by me", match: (a) => /finance|product/i.test(a.path) },
   ],
   notebook: [
@@ -441,7 +441,7 @@ export function AssetSelector({
     ];
 
     return (
-      <div className="flex items-center flex-nowrap overflow-x-auto overflow-y-hidden scrollbar-hide h-[28px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+      <div className="flex items-center flex-nowrap overflow-x-auto overflow-y-hidden scrollbar-hide h-[34px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
         {/* For You pill — collapses when a type is selected */}
         <div
           className="shrink-0"
@@ -450,6 +450,7 @@ export function AssetSelector({
             opacity: isTypeView ? 0 : 1,
             overflow: "hidden",
             transition: "max-width 0.3s ease, opacity 0.2s ease",
+            transitionDelay: isTypeView ? "0ms" : `${(availableQuickFilters.length + 1) * 80}ms`,
           }}
         >
           <button
@@ -481,6 +482,7 @@ export function AssetSelector({
             backgroundColor: "#d1d5db",
             opacity: isTypeView ? 0 : 1,
             transition: "all 0.3s ease",
+            transitionDelay: isTypeView ? "0ms" : `${(availableQuickFilters.length + 1) * 80}ms`,
           }}
         />
 
@@ -495,6 +497,7 @@ export function AssetSelector({
               overflow: "hidden",
               marginRight: isTypeView ? 0 : (i < hierarchyPills.length - 1 ? 4 : 0),
               transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease",
+              transitionDelay: isTypeView ? "0ms" : `${(availableQuickFilters.length + 1) * 80}ms`,
             }}
           >
             <button
@@ -527,6 +530,7 @@ export function AssetSelector({
             backgroundColor: "#d1d5db",
             opacity: isTypeView ? 0 : 1,
             transition: "all 0.35s ease",
+            transitionDelay: isTypeView ? "0ms" : `${(availableQuickFilters.length + 1) * 80}ms`,
           }}
         />
 
@@ -545,6 +549,7 @@ export function AssetSelector({
                 overflow: "hidden",
                 marginRight: isOtherTypeActive ? 0 : (isActive ? 4 : 4),
                 transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease",
+                transitionDelay: isOtherTypeActive ? "0ms" : `${(availableQuickFilters.length + 1) * 80}ms`,
               }}
             >
               {isActive ? (
@@ -592,7 +597,7 @@ export function AssetSelector({
               overflow: "hidden",
               marginRight: isTypeView ? 4 : 0,
               transition: "max-width 0.35s ease, opacity 0.3s ease, margin 0.35s ease",
-              transitionDelay: isTypeView ? `${(i + 1) * 80}ms` : "0ms",
+              transitionDelay: isTypeView ? `${(i + 1) * 80}ms` : `${(availableQuickFilters.length - i) * 80}ms`,
             }}
           >
             <button
