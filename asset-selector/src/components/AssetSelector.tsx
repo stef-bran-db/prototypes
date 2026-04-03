@@ -471,11 +471,12 @@ export function AssetSelector({
 
         {/* Divider between For You and hierarchy pills */}
         <div
-          className="h-4 bg-gray-200 shrink-0"
+          className="h-3 bg-gray-300 shrink-0 self-center"
           style={{
             width: isTypeView ? 0 : 1,
+            marginLeft: isTypeView ? 0 : 4,
             marginRight: isTypeView ? 0 : 4,
-            opacity: isTypeView ? 0 : 0.5,
+            opacity: isTypeView ? 0 : 1,
             transition: "all 0.3s ease",
           }}
         />
@@ -512,12 +513,12 @@ export function AssetSelector({
 
         {/* Divider between core and type pills — hide when type is selected */}
         <div
-          className="h-4 bg-gray-200 shrink-0"
+          className="h-3 bg-gray-300 shrink-0 self-center"
           style={{
             width: isTypeView ? 0 : 1,
             marginLeft: isTypeView ? 0 : 4,
             marginRight: isTypeView ? 0 : 4,
-            opacity: isTypeView ? 0 : 0.5,
+            opacity: isTypeView ? 0 : 1,
             transition: "all 0.35s ease",
           }}
         />
