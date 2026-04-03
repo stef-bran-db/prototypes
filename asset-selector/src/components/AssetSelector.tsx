@@ -442,8 +442,46 @@ export function AssetSelector({
 
     return (
       <div className="flex items-center flex-nowrap overflow-x-auto scrollbar-hide h-[24px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-        {/* Core pills — collapse when a type is selected */}
-        {allCorePills.map((pill) => (
+        {/* For You pill — collapses when a type is selected */}
+        <div
+          className="shrink-0"
+          style={{
+            maxWidth: isTypeView ? 0 : 200,
+            opacity: isTypeView ? 0 : 1,
+            overflow: "hidden",
+            marginRight: isTypeView ? 0 : 4,
+            transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease",
+          }}
+        >
+          <button
+            onClick={() => {
+              setActiveSection("forYou");
+              setHierarchyPath([]);
+              setActiveQuickFilters(new Set());
+            }}
+            className={`px-2.5 py-0.5 text-xs rounded-full transition-colors whitespace-nowrap
+              ${activeSection === "forYou"
+                ? "bg-blue-50 text-blue-700 border border-blue-200 font-medium"
+                : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+              }`}
+          >
+            For you
+          </button>
+        </div>
+
+        {/* Divider between For You and hierarchy pills */}
+        <div
+          className="h-4 bg-gray-200 shrink-0"
+          style={{
+            width: isTypeView ? 0 : 1,
+            marginRight: isTypeView ? 0 : 4,
+            opacity: isTypeView ? 0 : 0.5,
+            transition: "all 0.3s ease",
+          }}
+        />
+
+        {/* Hierarchy pills — collapse when a type is selected */}
+        {hierarchyPills.map((pill) => (
           <div
             key={pill.key}
             className="shrink-0"
