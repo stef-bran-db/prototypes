@@ -167,7 +167,7 @@ export function AssetSelector({
       const timeout = setTimeout(() => {
         setExitingFilters([]);
         prevFiltersRef.current = [];
-      }, prevFiltersRef.current.length * 80 + 350);
+      }, prevFiltersRef.current.length * 50 + 400);
       return () => clearTimeout(timeout);
     }
   }, [liveQuickFilters]);
@@ -479,7 +479,7 @@ export function AssetSelector({
             opacity: isTypeView ? 0 : 1,
             overflow: "hidden",
             transition: "max-width 0.3s ease, opacity 0.2s ease",
-            transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 80 + 150}ms`,
+            transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 50 + 100}ms`,
           }}
         >
           <button
@@ -511,7 +511,7 @@ export function AssetSelector({
             backgroundColor: "#d1d5db",
             opacity: isTypeView ? 0 : 1,
             transition: "all 0.3s ease",
-            transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 80 + 150}ms`,
+            transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 50 + 100}ms`,
           }}
         />
 
@@ -526,7 +526,7 @@ export function AssetSelector({
               overflow: "hidden",
               marginRight: isTypeView ? 0 : (i < hierarchyPills.length - 1 ? 4 : 0),
               transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease",
-              transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 80 + 150}ms`,
+              transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 50 + 100}ms`,
             }}
           >
             <button
@@ -559,7 +559,7 @@ export function AssetSelector({
             backgroundColor: "#d1d5db",
             opacity: isTypeView ? 0 : 1,
             transition: "all 0.35s ease",
-            transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 80 + 150}ms`,
+            transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 50 + 100}ms`,
           }}
         />
 
@@ -628,7 +628,7 @@ export function AssetSelector({
               overflow: "hidden",
               marginRight: isShowing ? 4 : 0,
               transition: "max-width 0.35s ease, opacity 0.3s ease, margin 0.35s ease",
-              transitionDelay: isShowing ? `${(i + 1) * 80}ms` : `${(availableQuickFilters.length - 1 - i) * 80}ms`,
+              transitionDelay: isShowing ? `${(i + 1) * 80}ms` : `${(availableQuickFilters.length - 1 - i) * 50}ms`,
             }}
           >
             <button
