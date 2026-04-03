@@ -441,7 +441,7 @@ export function AssetSelector({
     ];
 
     return (
-      <div className="flex items-center flex-nowrap overflow-x-auto overflow-y-hidden scrollbar-hide h-[24px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+      <div className="flex items-center flex-nowrap overflow-x-auto overflow-y-hidden scrollbar-hide h-[28px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
         {/* For You pill — collapses when a type is selected */}
         <div
           className="shrink-0"
@@ -449,8 +449,7 @@ export function AssetSelector({
             maxWidth: isTypeView ? 0 : 200,
             opacity: isTypeView ? 0 : 1,
             overflow: "hidden",
-            marginRight: isTypeView ? 0 : 4,
-            transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease",
+            transition: "max-width 0.3s ease, opacity 0.2s ease",
           }}
         >
           <button
@@ -477,8 +476,8 @@ export function AssetSelector({
             alignSelf: "stretch",
             marginTop: 4,
             marginBottom: 4,
-            marginLeft: isTypeView ? 0 : 6,
-            marginRight: isTypeView ? 0 : 6,
+            marginLeft: isTypeView ? 0 : 5,
+            marginRight: isTypeView ? 0 : 5,
             backgroundColor: "#d1d5db",
             opacity: isTypeView ? 0 : 1,
             transition: "all 0.3s ease",
@@ -486,7 +485,7 @@ export function AssetSelector({
         />
 
         {/* Hierarchy pills — collapse when a type is selected */}
-        {hierarchyPills.map((pill) => (
+        {hierarchyPills.map((pill, i) => (
           <div
             key={pill.key}
             className="shrink-0"
@@ -494,7 +493,7 @@ export function AssetSelector({
               maxWidth: isTypeView ? 0 : 200,
               opacity: isTypeView ? 0 : 1,
               overflow: "hidden",
-              marginRight: isTypeView ? 0 : 4,
+              marginRight: isTypeView ? 0 : (i < hierarchyPills.length - 1 ? 4 : 0),
               transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease",
             }}
           >
@@ -523,8 +522,8 @@ export function AssetSelector({
             alignSelf: "stretch",
             marginTop: 4,
             marginBottom: 4,
-            marginLeft: isTypeView ? 0 : 6,
-            marginRight: isTypeView ? 0 : 6,
+            marginLeft: isTypeView ? 0 : 5,
+            marginRight: isTypeView ? 0 : 5,
             backgroundColor: "#d1d5db",
             opacity: isTypeView ? 0 : 1,
             transition: "all 0.35s ease",
@@ -544,7 +543,7 @@ export function AssetSelector({
                 maxWidth: isOtherTypeActive ? 0 : 200,
                 opacity: isOtherTypeActive ? 0 : 1,
                 overflow: "hidden",
-                marginRight: isOtherTypeActive ? 0 : 4,
+                marginRight: isOtherTypeActive ? 0 : (isActive ? 4 : 4),
                 transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease",
               }}
             >
