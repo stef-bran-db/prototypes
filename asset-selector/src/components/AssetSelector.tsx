@@ -15,41 +15,49 @@ interface QuickFilter {
   match: (asset: Asset) => boolean;
 }
 
+// Helpers for time-based filters
+const isRecentlyAccessed = (a: Asset, withinDays = 7) => {
+  if (!a.lastAccessed) return false;
+  const diff = Date.now() - new Date(a.lastAccessed).getTime();
+  return diff <= withinDays * 86_400_000;
+};
+const isPopular = (a: Asset) => (a.popularity ?? 0) >= 65;
+
 const quickFiltersForType: Record<string, QuickFilter[]> = {
   table: [
-    { key: "recent", label: "Recently queried", match: (a) => /queried.*(?:ago|yesterday|last week)/i.test(a.reason ?? "") || /queried \d+ times/i.test(a.reason ?? "") },
-    { key: "popular", label: "Popular", match: (a) => /popular/i.test(a.reason ?? "") },
+    { key: "recent", label: "Recently queried", match: (a) => isRecentlyAccessed(a, 7) },
+    { key: "popular", label: "Popular", match: isPopular },
     { key: "owned", label: "Owned by me", match: (a) => /finance|product/i.test(a.path) },
     { key: "frequent", label: "Frequently queried", match: (a) => /times this week/i.test(a.reason ?? "") },
   ],
   view: [
-    { key: "recent", label: "Recently queried", match: (a) => /queried.*(?:ago|yesterday|last week)/i.test(a.reason ?? "") || /queried \d+ times/i.test(a.reason ?? "") },
-    { key: "popular", label: "Popular", match: (a) => /popular/i.test(a.reason ?? "") },
+    { key: "recent", label: "Recently queried", match: (a) => isRecentlyAccessed(a, 7) },
+    { key: "popular", label: "Popular", match: isPopular },
     { key: "owned", label: "Owned by me", match: (a) => /finance|product/i.test(a.path) },
   ],
   notebook: [
-    { key: "recent", label: "Recently opened", match: (a) => /opened/i.test(a.reason ?? "") },
+    { key: "recent", label: "Recently opened", match: (a) => isRecentlyAccessed(a, 7) },
     { key: "favorited", label: "Favorited", match: (a) => /favorited/i.test(a.reason ?? "") },
-    { key: "popular", label: "Popular", match: (a) => /popular/i.test(a.reason ?? "") },
+    { key: "popular", label: "Popular", match: isPopular },
     { key: "owned", label: "Owned by me", match: (a) => /users\/stef/i.test(a.path) },
   ],
   file: [
-    { key: "recent", label: "Recently opened", match: (a) => /opened/i.test(a.reason ?? "") },
-    { key: "popular", label: "Popular", match: (a) => /popular/i.test(a.reason ?? "") },
+    { key: "recent", label: "Recently opened", match: (a) => isRecentlyAccessed(a, 7) },
+    { key: "popular", label: "Popular", match: isPopular },
     { key: "owned", label: "Owned by me", match: (a) => /users\/stef/i.test(a.path) },
   ],
   query: [
-    { key: "recent", label: "Recently run", match: (a) => /run/i.test(a.reason ?? "") },
-    { key: "popular", label: "Popular", match: (a) => /popular/i.test(a.reason ?? "") },
+    { key: "recent", label: "Recently run", match: (a) => isRecentlyAccessed(a, 7) },
+    { key: "popular", label: "Popular", match: isPopular },
     { key: "scheduled", label: "Scheduled", match: (a) => /scheduled/i.test(a.reason ?? "") },
   ],
   alert: [
-    { key: "recent", label: "Recently triggered", match: (a) => /triggered/i.test(a.reason ?? "") },
-    { key: "popular", label: "Popular", match: (a) => /popular/i.test(a.reason ?? "") },
+    { key: "recent", label: "Recently triggered", match: (a) => isRecentlyAccessed(a, 7) },
+    { key: "popular", label: "Popular", match: isPopular },
   ],
   dashboard: [
     { key: "references", label: "References Finance tables", match: (a) => /references/i.test(a.reason ?? "") },
-    { key: "popular", label: "Popular", match: (a) => /popular/i.test(a.reason ?? "") },
+    { key: "popular", label: "Popular", match: isPopular },
   ],
   model: [
     { key: "trained", label: "Trained on Finance data", match: (a) => /trained/i.test(a.reason ?? "") },
@@ -173,7 +181,7 @@ export function AssetSelector({
       pool = typeFilterAssets[activeSection];
       if (activeQuickFilters.size > 0) {
         const filters = (quickFiltersForType[activeSection] ?? []).filter((f) => activeQuickFilters.has(f.key));
-        pool = pool.filter((a) => filters.some((f) => f.match(a)));
+        pool = pool.filter((a) => filters.every((f) => f.match(a)));
       }
     }
 
@@ -231,7 +239,7 @@ export function AssetSelector({
     let assets = typeFilterAssets[activeSection];
     if (activeQuickFilters.size > 0) {
       const filters = availableQuickFilters.filter((f) => activeQuickFilters.has(f.key));
-      assets = assets.filter((a) => filters.some((f) => f.match(a)));
+      assets = assets.filter((a) => filters.every((f) => f.match(a)));
     }
     return sortAssets(assets, sortMode);
   }, [isTypeView, typeFilterAssets, activeSection, activeQuickFilters, availableQuickFilters, sortMode]);
@@ -441,7 +449,7 @@ export function AssetSelector({
     ];
 
     return (
-      <div className="flex items-center flex-nowrap overflow-x-auto overflow-y-hidden scrollbar-hide h-[34px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+      <div className="flex items-center flex-nowrap overflow-x-auto overflow-y-hidden scrollbar-hide h-[30px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
         {/* For You pill — collapses when a type is selected */}
         <div
           className="shrink-0"

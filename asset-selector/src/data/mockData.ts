@@ -57,15 +57,30 @@ const reasons = [
   "Popular among similar users", "Frequently queried", "Referenced in 2 dashboards",
 ];
 
+// Days ago helpers for lastAccessed
+const daysAgo = (d: number) => {
+  const date = new Date();
+  date.setDate(date.getDate() - d);
+  return date.toISOString();
+};
+
+// Access recency tiers — cycled independently of other properties
+const accessDaysAgo = [0, 1, 1, 2, 3, 5, 7, 10, 14, 21, 30, 45, 60, 90];
+
 function generateAssets(type: AssetType, names: string[], count: number): Asset[] {
-  return Array.from({ length: count }, (_, i) => ({
-    id: `gen-${type}-${i}`,
-    name: names[i % names.length] + (i >= names.length ? `_${Math.floor(i / names.length) + 1}` : ""),
-    type,
-    path: schemas[i % schemas.length],
-    reason: reasons[i % reasons.length],
-    popularity: Math.max(10, 95 - i * 1.5),
-  }));
+  return Array.from({ length: count }, (_, i) => {
+    const popularity = Math.max(10, 95 - i * 1.5);
+    const accessAge = accessDaysAgo[i % accessDaysAgo.length];
+    return {
+      id: `gen-${type}-${i}`,
+      name: names[i % names.length] + (i >= names.length ? `_${Math.floor(i / names.length) + 1}` : ""),
+      type,
+      path: schemas[i % schemas.length],
+      reason: reasons[i % reasons.length],
+      popularity,
+      lastAccessed: daysAgo(accessAge),
+    };
+  });
 }
 
 const viewNames = [
@@ -261,51 +276,51 @@ export const wsHierarchy: HierarchyNode[] = [
 
 // Workspace list view assets
 export const wsNotebooksAssets: Asset[] = [
-  { id: "wn1", name: "Revenue Analysis.py", type: "notebook", path: "/Users/stef.bran/Projects", reason: "Opened 2 hours ago", popularity: 95 },
-  { id: "wn2", name: "ETL Pipeline.py", type: "notebook", path: "/Users/stef.bran/Projects", reason: "Opened yesterday", popularity: 90 },
-  { id: "wn3", name: "Data Quality Checks.sql", type: "notebook", path: "/Repos/analytics", reason: "Opened 3 days ago", popularity: 80 },
-  { id: "wn4", name: "Model Training.py", type: "notebook", path: "/Users/stef.bran/ML", reason: "Favorited", popularity: 85 },
-  { id: "wn5", name: "Dashboard Queries.sql", type: "notebook", path: "/Shared/Team", reason: "Favorited", popularity: 82 },
-  { id: "wn6", name: "Feature Engineering.py", type: "notebook", path: "/Users/stef.bran/ML", reason: "Opened last week", popularity: 70 },
-  { id: "wn7", name: "Cleanup Script.py", type: "notebook", path: "/Users/stef.bran/Projects", reason: "Opened 2 weeks ago", popularity: 45 },
-  { id: "wn8", name: "Metrics Pipeline.py", type: "notebook", path: "/Repos/analytics", reason: "Opened last week", popularity: 65 },
-  { id: "wn9", name: "Onboarding.py", type: "notebook", path: "/Shared/Team", reason: "Popular in your workspace", popularity: 55 },
-  { id: "wn10", name: "A/B Test Analysis.py", type: "notebook", path: "/Users/stef.bran/Projects", reason: "Opened 3 weeks ago", popularity: 40 },
-  { id: "wn11", name: "Data Migration.sql", type: "notebook", path: "/Repos/infrastructure", reason: "Opened last month", popularity: 30 },
-  { id: "wn12", name: "Churn Analysis.py", type: "notebook", path: "/Shared/Data Science", reason: "Popular in your workspace", popularity: 60 },
+  { id: "wn1", name: "Revenue Analysis.py", type: "notebook", path: "/Users/stef.bran/Projects", reason: "Opened 2 hours ago", popularity: 95, lastAccessed: daysAgo(0) },
+  { id: "wn2", name: "ETL Pipeline.py", type: "notebook", path: "/Users/stef.bran/Projects", reason: "Opened yesterday", popularity: 90, lastAccessed: daysAgo(1) },
+  { id: "wn3", name: "Data Quality Checks.sql", type: "notebook", path: "/Repos/analytics", reason: "Opened 3 days ago", popularity: 80, lastAccessed: daysAgo(3) },
+  { id: "wn4", name: "Model Training.py", type: "notebook", path: "/Users/stef.bran/ML", reason: "Favorited", popularity: 85, lastAccessed: daysAgo(10) },
+  { id: "wn5", name: "Dashboard Queries.sql", type: "notebook", path: "/Shared/Team", reason: "Favorited", popularity: 82, lastAccessed: daysAgo(14) },
+  { id: "wn6", name: "Feature Engineering.py", type: "notebook", path: "/Users/stef.bran/ML", reason: "Opened last week", popularity: 70, lastAccessed: daysAgo(5) },
+  { id: "wn7", name: "Cleanup Script.py", type: "notebook", path: "/Users/stef.bran/Projects", reason: "Opened 2 weeks ago", popularity: 45, lastAccessed: daysAgo(14) },
+  { id: "wn8", name: "Metrics Pipeline.py", type: "notebook", path: "/Repos/analytics", reason: "Opened last week", popularity: 65, lastAccessed: daysAgo(6) },
+  { id: "wn9", name: "Onboarding.py", type: "notebook", path: "/Shared/Team", reason: "Popular in your workspace", popularity: 55, lastAccessed: daysAgo(30) },
+  { id: "wn10", name: "A/B Test Analysis.py", type: "notebook", path: "/Users/stef.bran/Projects", reason: "Opened 3 weeks ago", popularity: 40, lastAccessed: daysAgo(21) },
+  { id: "wn11", name: "Data Migration.sql", type: "notebook", path: "/Repos/infrastructure", reason: "Opened last month", popularity: 30, lastAccessed: daysAgo(30) },
+  { id: "wn12", name: "Churn Analysis.py", type: "notebook", path: "/Shared/Data Science", reason: "Popular in your workspace", popularity: 60, lastAccessed: daysAgo(45) },
 ];
 
 export const wsFilesAssets: Asset[] = [
-  { id: "wf1", name: "config.yaml", type: "file", path: "/Users/stef.bran/Projects", reason: "Opened yesterday", popularity: 75 },
-  { id: "wf2", name: "requirements.txt", type: "file", path: "/Repos/analytics", reason: "Opened 3 days ago", popularity: 70 },
-  { id: "wf3", name: "schema.json", type: "file", path: "/Users/stef.bran/Projects", reason: "Opened last week", popularity: 55 },
-  { id: "wf4", name: "README.md", type: "file", path: "/Repos/analytics", reason: "Popular in your workspace", popularity: 60 },
-  { id: "wf5", name: "init_script.sh", type: "file", path: "/Shared/Team", reason: "Opened 2 weeks ago", popularity: 40 },
-  { id: "wf6", name: ".env.production", type: "file", path: "/Users/stef.bran/Projects", reason: "Opened last month", popularity: 30 },
-  { id: "wf7", name: "data_dictionary.csv", type: "file", path: "/Shared/Team", reason: "Popular in your workspace", popularity: 50 },
-  { id: "wf8", name: "pipeline_params.json", type: "file", path: "/Repos/infrastructure", reason: "Opened 3 weeks ago", popularity: 35 },
+  { id: "wf1", name: "config.yaml", type: "file", path: "/Users/stef.bran/Projects", reason: "Opened yesterday", popularity: 75, lastAccessed: daysAgo(1) },
+  { id: "wf2", name: "requirements.txt", type: "file", path: "/Repos/analytics", reason: "Opened 3 days ago", popularity: 70, lastAccessed: daysAgo(3) },
+  { id: "wf3", name: "schema.json", type: "file", path: "/Users/stef.bran/Projects", reason: "Opened last week", popularity: 55, lastAccessed: daysAgo(6) },
+  { id: "wf4", name: "README.md", type: "file", path: "/Repos/analytics", reason: "Popular in your workspace", popularity: 60, lastAccessed: daysAgo(20) },
+  { id: "wf5", name: "init_script.sh", type: "file", path: "/Shared/Team", reason: "Opened 2 weeks ago", popularity: 40, lastAccessed: daysAgo(14) },
+  { id: "wf6", name: ".env.production", type: "file", path: "/Users/stef.bran/Projects", reason: "Opened last month", popularity: 30, lastAccessed: daysAgo(30) },
+  { id: "wf7", name: "data_dictionary.csv", type: "file", path: "/Shared/Team", reason: "Popular in your workspace", popularity: 50, lastAccessed: daysAgo(25) },
+  { id: "wf8", name: "pipeline_params.json", type: "file", path: "/Repos/infrastructure", reason: "Opened 3 weeks ago", popularity: 35, lastAccessed: daysAgo(21) },
 ];
 
 export const wsQueriesAssets: Asset[] = [
-  { id: "wq1", name: "Daily Revenue Summary", type: "query", path: "Saved Queries", reason: "Run 8 times this week", popularity: 92 },
-  { id: "wq2", name: "Active Users Last 30d", type: "query", path: "Saved Queries", reason: "Run 5 times this week", popularity: 85 },
-  { id: "wq3", name: "Order Funnel Metrics", type: "query", path: "Saved Queries", reason: "Run 3 times this week", popularity: 78 },
-  { id: "wq4", name: "Support Ticket Trends", type: "query", path: "Shared Queries", reason: "Popular in your workspace", popularity: 70 },
-  { id: "wq5", name: "Campaign Attribution", type: "query", path: "Saved Queries", reason: "Run yesterday", popularity: 65 },
-  { id: "wq6", name: "Warehouse Cost Breakdown", type: "query", path: "Saved Queries", reason: "Run 2 times this week", popularity: 72 },
-  { id: "wq7", name: "Customer Retention Cohorts", type: "query", path: "Shared Queries", reason: "Popular in your workspace", popularity: 60 },
-  { id: "wq8", name: "Data Freshness Check", type: "query", path: "Saved Queries", reason: "Scheduled daily", popularity: 55 },
-  { id: "wq9", name: "Product Usage by Tier", type: "query", path: "Saved Queries", reason: "Run last week", popularity: 45 },
-  { id: "wq10", name: "Monthly Churn Report", type: "query", path: "Shared Queries", reason: "Run 4 times this month", popularity: 50 },
+  { id: "wq1", name: "Daily Revenue Summary", type: "query", path: "Saved Queries", reason: "Run 8 times this week", popularity: 92, lastAccessed: daysAgo(0) },
+  { id: "wq2", name: "Active Users Last 30d", type: "query", path: "Saved Queries", reason: "Run 5 times this week", popularity: 85, lastAccessed: daysAgo(1) },
+  { id: "wq3", name: "Order Funnel Metrics", type: "query", path: "Saved Queries", reason: "Run 3 times this week", popularity: 78, lastAccessed: daysAgo(2) },
+  { id: "wq4", name: "Support Ticket Trends", type: "query", path: "Shared Queries", reason: "Popular in your workspace", popularity: 70, lastAccessed: daysAgo(12) },
+  { id: "wq5", name: "Campaign Attribution", type: "query", path: "Saved Queries", reason: "Run yesterday", popularity: 65, lastAccessed: daysAgo(1) },
+  { id: "wq6", name: "Warehouse Cost Breakdown", type: "query", path: "Saved Queries", reason: "Run 2 times this week", popularity: 72, lastAccessed: daysAgo(3) },
+  { id: "wq7", name: "Customer Retention Cohorts", type: "query", path: "Shared Queries", reason: "Popular in your workspace", popularity: 60, lastAccessed: daysAgo(18) },
+  { id: "wq8", name: "Data Freshness Check", type: "query", path: "Saved Queries", reason: "Scheduled daily", popularity: 55, lastAccessed: daysAgo(0) },
+  { id: "wq9", name: "Product Usage by Tier", type: "query", path: "Saved Queries", reason: "Run last week", popularity: 45, lastAccessed: daysAgo(8) },
+  { id: "wq10", name: "Monthly Churn Report", type: "query", path: "Shared Queries", reason: "Run 4 times this month", popularity: 50, lastAccessed: daysAgo(5) },
 ];
 
 export const wsAlertsAssets: Asset[] = [
-  { id: "wa1", name: "Revenue Drop > 10%", type: "alert", path: "My Alerts", reason: "Triggered 2 days ago", popularity: 90 },
-  { id: "wa2", name: "Pipeline Failure", type: "alert", path: "My Alerts", reason: "Triggered yesterday", popularity: 88 },
-  { id: "wa3", name: "Data Freshness SLA Breach", type: "alert", path: "Team Alerts", reason: "Triggered 5 days ago", popularity: 75 },
-  { id: "wa4", name: "Warehouse Cost Spike", type: "alert", path: "My Alerts", reason: "Triggered last week", popularity: 65 },
-  { id: "wa5", name: "Error Rate > 5%", type: "alert", path: "Team Alerts", reason: "Popular in your workspace", popularity: 70 },
-  { id: "wa6", name: "New User Signup Drop", type: "alert", path: "Team Alerts", reason: "Triggered 2 weeks ago", popularity: 50 },
+  { id: "wa1", name: "Revenue Drop > 10%", type: "alert", path: "My Alerts", reason: "Triggered 2 days ago", popularity: 90, lastAccessed: daysAgo(2) },
+  { id: "wa2", name: "Pipeline Failure", type: "alert", path: "My Alerts", reason: "Triggered yesterday", popularity: 88, lastAccessed: daysAgo(1) },
+  { id: "wa3", name: "Data Freshness SLA Breach", type: "alert", path: "Team Alerts", reason: "Triggered 5 days ago", popularity: 75, lastAccessed: daysAgo(5) },
+  { id: "wa4", name: "Warehouse Cost Spike", type: "alert", path: "My Alerts", reason: "Triggered last week", popularity: 65, lastAccessed: daysAgo(8) },
+  { id: "wa5", name: "Error Rate > 5%", type: "alert", path: "Team Alerts", reason: "Popular in your workspace", popularity: 70, lastAccessed: daysAgo(20) },
+  { id: "wa6", name: "New User Signup Drop", type: "alert", path: "Team Alerts", reason: "Triggered 2 weeks ago", popularity: 50, lastAccessed: daysAgo(14) },
 ];
 
 // Multi-select assets for Domain Curation flow
