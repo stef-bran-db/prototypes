@@ -441,7 +441,7 @@ export function AssetSelector({
     ];
 
     return (
-      <div className="flex items-center flex-nowrap overflow-x-auto scrollbar-hide h-[24px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+      <div className="flex items-center flex-nowrap overflow-x-auto overflow-y-hidden scrollbar-hide h-[24px]" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
         {/* For You pill — collapses when a type is selected */}
         <div
           className="shrink-0"
@@ -470,13 +470,16 @@ export function AssetSelector({
         </div>
 
         {/* Divider between For You and hierarchy pills */}
-        <div
-          className="bg-gray-300 shrink-0"
+        <span
           style={{
+            display: "inline-block",
             width: isTypeView ? 0 : 1,
-            height: 14,
+            alignSelf: "stretch",
+            marginTop: 4,
+            marginBottom: 4,
             marginLeft: isTypeView ? 0 : 6,
             marginRight: isTypeView ? 0 : 6,
+            backgroundColor: "#d1d5db",
             opacity: isTypeView ? 0 : 1,
             transition: "all 0.3s ease",
           }}
@@ -513,13 +516,16 @@ export function AssetSelector({
         ))}
 
         {/* Divider between core and type pills — hide when type is selected */}
-        <div
-          className="bg-gray-300 shrink-0"
+        <span
           style={{
+            display: "inline-block",
             width: isTypeView ? 0 : 1,
-            height: 14,
+            alignSelf: "stretch",
+            marginTop: 4,
+            marginBottom: 4,
             marginLeft: isTypeView ? 0 : 6,
             marginRight: isTypeView ? 0 : 6,
+            backgroundColor: "#d1d5db",
             opacity: isTypeView ? 0 : 1,
             transition: "all 0.35s ease",
           }}
