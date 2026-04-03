@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Search, RefreshCw, ChevronRight, X, ArrowUpDown, Filter } from "lucide-react";
 import { AssetOption, HierarchyOption } from "./AssetOption";
 import { AssetIcon } from "./Icons";
@@ -149,10 +149,31 @@ export function AssetSelector({
     return hierarchy;
   }, [activeSection, hierarchies, hierarchy]);
 
-  const availableQuickFilters = useMemo(() => {
+  const liveQuickFilters = useMemo(() => {
     if (!isTypeView) return [];
     return quickFiltersForType[activeSection] ?? [];
   }, [activeSection, isTypeView]);
+
+  // Keep previous filters around long enough to animate out
+  const prevFiltersRef = useRef<QuickFilter[]>([]);
+  const [exitingFilters, setExitingFilters] = useState<QuickFilter[]>([]);
+
+  useEffect(() => {
+    if (liveQuickFilters.length > 0) {
+      prevFiltersRef.current = liveQuickFilters;
+      setExitingFilters([]);
+    } else if (prevFiltersRef.current.length > 0) {
+      setExitingFilters(prevFiltersRef.current);
+      const timeout = setTimeout(() => {
+        setExitingFilters([]);
+        prevFiltersRef.current = [];
+      }, prevFiltersRef.current.length * 80 + 350);
+      return () => clearTimeout(timeout);
+    }
+  }, [liveQuickFilters]);
+
+  const availableQuickFilters = liveQuickFilters.length > 0 ? liveQuickFilters : exitingFilters;
+  const isQuickFiltersExiting = liveQuickFilters.length === 0 && exitingFilters.length > 0;
 
   const currentHierarchyChildren = useMemo(() => {
     if (hierarchyPath.length === 0) return activeHierarchy;
@@ -458,7 +479,7 @@ export function AssetSelector({
             opacity: isTypeView ? 0 : 1,
             overflow: "hidden",
             transition: "max-width 0.3s ease, opacity 0.2s ease",
-            transitionDelay: isTypeView ? "0ms" : `${availableQuickFilters.length * 80 + 100}ms`,
+            transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 80 + 150}ms`,
           }}
         >
           <button
@@ -490,7 +511,7 @@ export function AssetSelector({
             backgroundColor: "#d1d5db",
             opacity: isTypeView ? 0 : 1,
             transition: "all 0.3s ease",
-            transitionDelay: isTypeView ? "0ms" : `${availableQuickFilters.length * 80 + 100}ms`,
+            transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 80 + 150}ms`,
           }}
         />
 
@@ -505,7 +526,7 @@ export function AssetSelector({
               overflow: "hidden",
               marginRight: isTypeView ? 0 : (i < hierarchyPills.length - 1 ? 4 : 0),
               transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease",
-              transitionDelay: isTypeView ? "0ms" : `${availableQuickFilters.length * 80 + 100}ms`,
+              transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 80 + 150}ms`,
             }}
           >
             <button
@@ -538,7 +559,7 @@ export function AssetSelector({
             backgroundColor: "#d1d5db",
             opacity: isTypeView ? 0 : 1,
             transition: "all 0.35s ease",
-            transitionDelay: isTypeView ? "0ms" : `${availableQuickFilters.length * 80 + 100}ms`,
+            transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 80 + 150}ms`,
           }}
         />
 
@@ -557,7 +578,7 @@ export function AssetSelector({
                 overflow: "hidden",
                 marginRight: isOtherTypeActive ? 0 : (isActive ? 4 : 4),
                 transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease",
-                transitionDelay: isOtherTypeActive ? "0ms" : `${(availableQuickFilters.length + 1) * 80}ms`,
+                transitionDelay: isOtherTypeActive ? "0ms" : `${exitingFilters.length * 80 + 150}ms`,
               }}
             >
               {isActive ? (
@@ -595,17 +616,19 @@ export function AssetSelector({
         )}
 
         {/* Quick filters — appear when a type is selected */}
-        {availableQuickFilters.map((filter, i) => (
+        {availableQuickFilters.map((filter, i) => {
+          const isShowing = isTypeView && !isQuickFiltersExiting;
+          return (
           <div
             key={filter.key}
             className="shrink-0"
             style={{
-              maxWidth: isTypeView ? 200 : 0,
-              opacity: isTypeView ? 1 : 0,
+              maxWidth: isShowing ? 200 : 0,
+              opacity: isShowing ? 1 : 0,
               overflow: "hidden",
-              marginRight: isTypeView ? 4 : 0,
+              marginRight: isShowing ? 4 : 0,
               transition: "max-width 0.35s ease, opacity 0.3s ease, margin 0.35s ease",
-              transitionDelay: isTypeView ? `${(i + 1) * 80}ms` : `${(availableQuickFilters.length - 1 - i) * 80}ms`,
+              transitionDelay: isShowing ? `${(i + 1) * 80}ms` : `${(availableQuickFilters.length - 1 - i) * 80}ms`,
             }}
           >
             <button
@@ -620,7 +643,8 @@ export function AssetSelector({
               {activeQuickFilters.has(filter.key) && <X size={10} />}
             </button>
           </div>
-        ))}
+          );
+        })}
 
         {/* Clear all */}
         {activeQuickFilters.size > 0 && (
