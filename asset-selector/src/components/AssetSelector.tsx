@@ -479,7 +479,7 @@ export function AssetSelector({
             opacity: isTypeView ? 0 : 1,
             overflow: "hidden",
             transition: "max-width 0.3s ease, opacity 0.2s ease",
-            transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 50 + 100}ms`,
+            transitionDelay: isTypeView ? "0ms" : "300ms",
           }}
         >
           <button
@@ -511,7 +511,7 @@ export function AssetSelector({
             backgroundColor: "#d1d5db",
             opacity: isTypeView ? 0 : 1,
             transition: "all 0.3s ease",
-            transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 50 + 100}ms`,
+            transitionDelay: isTypeView ? "0ms" : "300ms",
           }}
         />
 
@@ -526,7 +526,7 @@ export function AssetSelector({
               overflow: "hidden",
               marginRight: isTypeView ? 0 : (i < hierarchyPills.length - 1 ? 4 : 0),
               transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease",
-              transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 50 + 100}ms`,
+              transitionDelay: isTypeView ? "0ms" : "300ms",
             }}
           >
             <button
@@ -559,7 +559,7 @@ export function AssetSelector({
             backgroundColor: "#d1d5db",
             opacity: isTypeView ? 0 : 1,
             transition: "all 0.35s ease",
-            transitionDelay: isTypeView ? "0ms" : `${exitingFilters.length * 50 + 100}ms`,
+            transitionDelay: isTypeView ? "0ms" : "300ms",
           }}
         />
 
@@ -578,7 +578,7 @@ export function AssetSelector({
                 overflow: "hidden",
                 marginRight: isOtherTypeActive ? 0 : (isActive ? 4 : 4),
                 transition: "max-width 0.3s ease, opacity 0.2s ease, margin 0.3s ease",
-                transitionDelay: isOtherTypeActive ? "0ms" : `${exitingFilters.length * 80 + 150}ms`,
+                transitionDelay: isOtherTypeActive ? "0ms" : "300ms",
               }}
             >
               {isActive ? (
