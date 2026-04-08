@@ -1,7 +1,17 @@
+type RichBlock =
+  | { type: "text"; value: string }
+  | { type: "asset"; name: string; assetType: "table" | "dashboard" | "notebook"; certified?: boolean }
+  | { type: "break" }
+  | { type: "detail"; value: string };
+
 export type Message = {
   role: "user" | "assistant";
   content: string;
   confidence?: "high" | "medium" | "low";
+  richContent?: RichBlock[];
+  actions?: string[];
+  followUp?: string[];
+  // Legacy — kept for compatibility
   assets?: {
     name: string;
     type: "table" | "dashboard" | "notebook";
@@ -13,95 +23,84 @@ export type Message = {
     owner?: string;
     actions?: string[];
   }[];
-  followUp?: string[];
 };
 
 export const mockConversations: Record<string, Message[]> = {
   revenue: [
     {
       role: "assistant",
-      content: "I found 3 tables that are likely relevant to analyzing revenue by product line. Here's why each one stands out:",
+      content: "",
       confidence: "high",
-      assets: [
-        {
-          name: "finance.marts.revenue_by_product",
-          type: "table",
-          reason: "Contains product_line, revenue, and transaction_date columns. Referenced in 6 notebooks performing quarterly revenue analysis and product segmentation. Powers the Q1 Revenue by Region dashboard. Updated daily.",
-          tags: ["product_line", "revenue", "transaction_date", "region"],
-          certified: true,
-          freshness: "Updated 2 hours ago",
-          popularity: "Queried by 12 analysts this week",
-          owner: "Data Engineering",
-          actions: ["Open with Genie Code", "Create query", "Open in notebook"],
-        },
-        {
-          name: "finance.staging.order_transactions",
-          type: "table",
-          reason: "Raw transaction data with product SKU-level granularity. Upstream source for revenue_by_product. Use this if you need more granular breakdowns than the mart provides.",
-          tags: ["order_id", "product_sku", "amount", "timestamp"],
-          freshness: "Updated 4 hours ago",
-          popularity: "Queried by 5 engineers this week",
-          owner: "Data Engineering",
-          actions: ["Open with Genie Code", "Create query"],
-        },
-        {
-          name: "finance.marts.product_catalog",
-          type: "table",
-          reason: "Product hierarchy and categorization. You'll likely need to join this with revenue_by_product to get product line names — they share the product_id key.",
-          tags: ["product_id", "product_line", "category", "subcategory"],
-          certified: true,
-          freshness: "Updated daily",
-          popularity: "Joined in 80% of revenue queries",
-          owner: "Product Analytics",
-          actions: ["Open with Genie Code"],
-        },
+      richContent: [
+        { type: "text", value: "For revenue by product line, you'll want " },
+        { type: "asset", name: "finance.marts.revenue_by_product", assetType: "table", certified: true },
+        { type: "text", value: " — it's the table the finance team uses for quarterly reporting. Has " },
+        { type: "text", value: "product_line, revenue, and transaction_date columns. Updated daily, powers the Q1 Revenue by Region dashboard, and queried by 12 analysts this week." },
+        { type: "break" },
+        { type: "break" },
+        { type: "text", value: "You'll likely need to join it with " },
+        { type: "asset", name: "finance.marts.product_catalog", assetType: "table", certified: true },
+        { type: "text", value: " to get product line names — they share a product_id key. This is how ~80% of revenue queries in the workspace are structured." },
+        { type: "break" },
+        { type: "break" },
+        { type: "text", value: "If you need more granular breakdowns at the SKU level, " },
+        { type: "asset", name: "finance.staging.order_transactions", assetType: "table" },
+        { type: "text", value: " is the upstream source — raw transaction data with product SKU-level detail." },
       ],
+      actions: ["Open with Genie Code", "Create query"],
       followUp: [
         "Tell me more about revenue_by_product",
-        "How do these tables relate to each other?",
-        "Are there any dashboards using these?",
+        "How are these tables related?",
+        "Are there dashboards using these?",
         "I need EMEA data specifically",
       ],
     },
     {
       role: "assistant",
-      content: "revenue_by_product and product_catalog share a product_id key — most analysts join them to get product line names alongside revenue figures.\n\nThe typical query pattern looks like:\n• revenue_by_product JOIN product_catalog ON product_id\n• Filter by transaction_date for your time range\n• Group by product_line\n\nThis is how the Q1 Revenue by Region dashboard is built, and it's the same pattern used in 4 of the 6 notebooks I mentioned.",
+      content: "",
       confidence: "high",
+      richContent: [
+        { type: "asset", name: "revenue_by_product", assetType: "table", certified: true },
+        { type: "text", value: " and " },
+        { type: "asset", name: "product_catalog", assetType: "table", certified: true },
+        { type: "text", value: " share a product_id key — most analysts join them to get product line names alongside revenue figures." },
+        { type: "break" },
+        { type: "break" },
+        { type: "text", value: "The typical query pattern:" },
+        { type: "break" },
+        { type: "detail", value: "revenue_by_product JOIN product_catalog ON product_id → filter by transaction_date → group by product_line" },
+        { type: "break" },
+        { type: "text", value: "This is how the " },
+        { type: "asset", name: "Q1 Revenue by Region", assetType: "dashboard" },
+        { type: "text", value: " dashboard is built, and the same pattern used in 4 of the 6 notebooks that reference these tables." },
+      ],
+      actions: ["Open Q1 Revenue dashboard", "Start Genie Code session with these tables"],
       followUp: [
-        "Open the Q1 Revenue dashboard",
         "Show me one of those notebooks",
-        "Start a Genie Code session with these tables",
+        "I need this for EMEA only",
       ],
     },
   ],
   churn: [
     {
       role: "assistant",
-      content: "I found 2 dashboards related to customer churn:",
+      content: "",
       confidence: "medium",
-      assets: [
-        {
-          name: "Customer Churn Analysis - Q1 2026",
-          type: "dashboard",
-          reason: "Tracks monthly churn rate, cohort retention curves, and churn drivers by segment. Created by the Customer Analytics team. Last viewed by 8 people this week.",
-          tags: ["churn_rate", "retention", "cohort", "segment"],
-          certified: true,
-          freshness: "Data refreshed daily",
-          popularity: "Viewed 23 times this week",
-          owner: "Customer Analytics",
-          actions: ["Open dashboard"],
-        },
-        {
-          name: "Churn Prediction Model Results",
-          type: "dashboard",
-          reason: "Shows output from the ML churn prediction model — risk scores by customer, feature importance, and model performance over time.",
-          tags: ["churn_risk", "prediction", "ml_model", "features"],
-          freshness: "Model retrained weekly",
-          popularity: "Viewed 11 times this week",
-          owner: "ML Engineering",
-          actions: ["Open dashboard"],
-        },
+      richContent: [
+        { type: "text", value: "I found two dashboards that cover customer churn:" },
+        { type: "break" },
+        { type: "break" },
+        { type: "asset", name: "Customer Churn Analysis - Q1 2026", assetType: "dashboard", certified: true },
+        { type: "text", value: " — tracks monthly churn rate, cohort retention curves, and churn drivers by segment. Owned by Customer Analytics, viewed by 23 people this week. Data refreshes daily." },
+        { type: "break" },
+        { type: "break" },
+        { type: "asset", name: "Churn Prediction Model Results", assetType: "dashboard" },
+        { type: "text", value: " — shows output from the ML churn prediction model: risk scores by customer, feature importance, and model performance over time. Owned by ML Engineering, retrained weekly." },
+        { type: "break" },
+        { type: "break" },
+        { type: "text", value: "The first one is probably what you want if you're looking at historical churn patterns. The second is more relevant if you're trying to identify at-risk customers going forward." },
       ],
+      actions: ["Open Churn Analysis dashboard", "Open Prediction Results"],
       followUp: [
         "What tables power these dashboards?",
         "Are there notebooks with churn analysis?",
@@ -112,7 +111,7 @@ export const mockConversations: Record<string, Message[]> = {
   pipeline: [
     {
       role: "assistant",
-      content: "Can you tell me more about what kind of pipeline? For example:\n\n• What data does it process? (e.g., customer events, transactions, logs)\n• What's the output? (e.g., a table for analytics, a feature store, a report)\n• Is this extending an existing pipeline or starting fresh?",
+      content: "Can you tell me a bit more about the pipeline? For example:\n\n• What kind of data does it process? (customer events, transactions, logs)\n• What's the expected output? (a table for analytics, a feature store, a report)\n• Is this extending an existing pipeline or starting fresh?\n\nThis will help me find the right source tables.",
       confidence: "low",
       followUp: [
         "It processes customer event data",
@@ -122,35 +121,27 @@ export const mockConversations: Record<string, Message[]> = {
     },
     {
       role: "assistant",
-      content: "For a customer event data pipeline, here are the data sources you'll likely need:",
+      content: "",
       confidence: "high",
-      assets: [
-        {
-          name: "events.raw.customer_events",
-          type: "table",
-          reason: "Raw customer event stream — page views, clicks, conversions. This is the source table used by 3 existing pipelines in the workspace. Partitioned by event_date.",
-          tags: ["event_type", "user_id", "timestamp", "event_properties"],
-          freshness: "Streaming — ~5 min latency",
-          popularity: "Source for 3 pipelines",
-          owner: "Platform Engineering",
-          actions: ["Open with Genie Code", "Create query"],
-        },
-        {
-          name: "events.enriched.user_sessions",
-          type: "table",
-          reason: "Sessionized version of customer_events with session duration, page count, and conversion flags. If you need session-level aggregation, start here instead of raw events.",
-          tags: ["session_id", "user_id", "duration", "converted"],
-          certified: true,
-          freshness: "Updated hourly",
-          popularity: "Queried by 7 analysts this week",
-          owner: "Data Engineering",
-          actions: ["Open with Genie Code"],
-        },
+      richContent: [
+        { type: "text", value: "For a customer event data pipeline, you'll likely want to start with " },
+        { type: "asset", name: "events.raw.customer_events", assetType: "table" },
+        { type: "text", value: " — that's the raw event stream (page views, clicks, conversions). It's the source table for 3 existing pipelines in the workspace, partitioned by event_date, with ~5 minute streaming latency." },
+        { type: "break" },
+        { type: "break" },
+        { type: "text", value: "If you need session-level aggregation rather than raw events, consider starting from " },
+        { type: "asset", name: "events.enriched.user_sessions", assetType: "table", certified: true },
+        { type: "text", value: " instead — it's the sessionized version with duration, page count, and conversion flags. Updated hourly, queried by 7 analysts this week. It's derived from customer_events, so you'd skip the sessionization step." },
+        { type: "break" },
+        { type: "break" },
+        { type: "text", value: "There's also a notebook that documents how user_sessions is built from customer_events, if you want to understand the transformation logic: " },
+        { type: "asset", name: "Session Enrichment Pipeline", assetType: "notebook" },
       ],
+      actions: ["Open with Genie Code", "View Session Enrichment notebook"],
       followUp: [
         "Show me the pipelines that use customer_events",
-        "What notebooks process this data?",
-        "How is user_sessions derived from customer_events?",
+        "How is user_sessions derived?",
+        "I need a different granularity",
       ],
     },
   ],

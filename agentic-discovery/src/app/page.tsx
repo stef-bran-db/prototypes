@@ -1,153 +1,171 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Search, ArrowUp, Table2, LayoutDashboard, FileCode, Sparkles, ExternalLink, Plus, ChevronRight, Shield, Clock, Users, Star } from "lucide-react";
+import {
+  Search, ArrowUp, Sparkles, ChevronRight, Home, FolderOpen, Database,
+  LayoutDashboard, FileCode, Briefcase, Settings, HelpCircle, Plus,
+  Table2, Clock, Users, Star, ExternalLink, ChevronDown, Zap, Box
+} from "lucide-react";
 import { mockConversations, type Message } from "./mock-data";
 
-function TypingIndicator() {
-  return (
-    <div className="flex items-center gap-1.5 pl-10" style={{ marginBottom: "var(--spacing-lg)" }}>
-      <div className="typing-dot w-1.5 h-1.5 rounded-full" style={{ background: "var(--accent)" }} />
-      <div className="typing-dot w-1.5 h-1.5 rounded-full" style={{ background: "var(--accent)" }} />
-      <div className="typing-dot w-1.5 h-1.5 rounded-full" style={{ background: "var(--accent)" }} />
-    </div>
-  );
-}
-
-function AssetCard({ asset }: { asset: NonNullable<Message["assets"]>[number] }) {
-  const iconMap = {
-    table: <Table2 size={14} style={{ color: "var(--accent)" }} />,
-    dashboard: <LayoutDashboard size={14} style={{ color: "#A78BFA" }} />,
-    notebook: <FileCode size={14} style={{ color: "var(--success)" }} />,
-  };
+function DatabricksShell({ children }: { children: React.ReactNode }) {
+  const navItems = [
+    { icon: Home, label: "Home", active: false },
+    { icon: FolderOpen, label: "Workspace", active: false },
+    { icon: Database, label: "Catalog", active: false },
+    { icon: Sparkles, label: "Discovery", active: true },
+    { icon: FileCode, label: "Editor", active: false },
+    { icon: LayoutDashboard, label: "Dashboards", active: false },
+    { icon: Briefcase, label: "Jobs", active: false },
+    { icon: Zap, label: "Compute", active: false },
+  ];
 
   return (
-    <div
-      className="rounded-lg group transition-colors cursor-pointer"
-      style={{
-        background: "var(--bg-secondary)",
-        border: "1px solid var(--border)",
-        padding: "var(--spacing-mid) var(--spacing-md)",
-      }}
-      onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--bg-code)")}
-      onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
-    >
-      <div className="flex items-start justify-between" style={{ marginBottom: "var(--spacing-sm)" }}>
-        <div className="flex items-center" style={{ gap: "var(--spacing-sm)" }}>
-          {iconMap[asset.type]}
-          <span className="font-semibold" style={{ fontSize: "var(--font-size-base)", color: "var(--text-primary)" }}>
-            {asset.name}
-          </span>
-          {asset.certified && (
-            <span className="flex items-center" style={{ gap: "2px", fontSize: "var(--font-size-sm)", color: "var(--warning)" }}>
-              <Star size={10} fill="currentColor" />
-              Certified
-            </span>
-          )}
-        </div>
-        <button className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: "var(--text-secondary)" }}>
-          <ExternalLink size={13} />
-        </button>
-      </div>
-
-      <p style={{ fontSize: "var(--font-size-base)", lineHeight: "var(--line-height-base)", color: "var(--text-secondary)", marginBottom: "var(--spacing-mid)" }}>
-        {asset.reason}
-      </p>
-
-      <div className="flex flex-wrap" style={{ gap: "var(--spacing-xs)", marginBottom: "var(--spacing-mid)" }}>
-        {asset.tags.map((tag, i) => (
-          <span
-            key={i}
-            className="rounded"
-            style={{
-              fontSize: "var(--font-size-sm)",
-              padding: "1px var(--spacing-sm)",
-              background: "var(--bg-primary)",
-              color: "var(--text-secondary)",
-              border: "1px solid var(--border)",
-            }}
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-
-      <div className="flex items-center" style={{ gap: "var(--spacing-md)", fontSize: "var(--font-size-sm)", color: "var(--text-disabled)" }}>
-        {asset.freshness && (
-          <span className="flex items-center" style={{ gap: "var(--spacing-xs)" }}>
-            <Clock size={11} /> {asset.freshness}
-          </span>
-        )}
-        {asset.popularity && (
-          <span className="flex items-center" style={{ gap: "var(--spacing-xs)" }}>
-            <Users size={11} /> {asset.popularity}
-          </span>
-        )}
-        {asset.owner && (
-          <span className="flex items-center" style={{ gap: "var(--spacing-xs)" }}>
-            <Shield size={11} /> {asset.owner}
-          </span>
-        )}
-      </div>
-
-      {asset.actions && asset.actions.length > 0 && (
+    <div className="h-screen flex" style={{ background: "var(--bg-primary)" }}>
+      {/* Left nav */}
+      <div
+        className="flex flex-col items-center shrink-0"
+        style={{
+          width: 48,
+          background: "var(--bg-primary)",
+          borderRight: "1px solid var(--border)",
+          paddingTop: "var(--spacing-sm)",
+          paddingBottom: "var(--spacing-sm)",
+        }}
+      >
+        {/* Databricks logo */}
         <div
-          className="flex"
+          className="flex items-center justify-center"
           style={{
-            gap: "var(--spacing-sm)",
-            marginTop: "var(--spacing-mid)",
-            paddingTop: "var(--spacing-mid)",
-            borderTop: "1px solid var(--border)",
+            width: 32,
+            height: 32,
+            marginBottom: "var(--spacing-md)",
           }}
         >
-          {asset.actions.map((action, i) => (
+          <Box size={20} style={{ color: "var(--accent)" }} />
+        </div>
+
+        {/* Nav items */}
+        <div className="flex flex-col items-center flex-1" style={{ gap: "2px", width: "100%" }}>
+          {navItems.map((item, i) => (
             <button
               key={i}
-              className="flex items-center rounded transition-colors"
+              className="flex flex-col items-center justify-center transition-colors"
               style={{
-                gap: "var(--spacing-xs)",
-                fontSize: "var(--font-size-sm)",
-                padding: "var(--spacing-xs) var(--spacing-mid)",
-                background: "rgba(66, 153, 224, 0.12)",
-                color: "var(--accent)",
-                border: "1px solid rgba(66, 153, 224, 0.2)",
+                width: 44,
+                height: 40,
                 borderRadius: "var(--radius-md)",
+                background: item.active ? "var(--bg-secondary)" : "transparent",
+                color: item.active ? "var(--text-primary)" : "var(--text-disabled)",
+                border: "none",
+                cursor: "pointer",
+                gap: "1px",
               }}
             >
-              {action === "Open in notebook" && <FileCode size={11} />}
-              {action === "Create query" && <Plus size={11} />}
-              {action === "Open dashboard" && <LayoutDashboard size={11} />}
-              {action === "Open with Genie Code" && <Sparkles size={11} />}
-              {action}
+              <item.icon size={16} />
+              <span style={{ fontSize: "9px" }}>{item.label}</span>
             </button>
           ))}
         </div>
-      )}
+
+        {/* Bottom nav */}
+        <div className="flex flex-col items-center" style={{ gap: "2px" }}>
+          <button
+            className="flex items-center justify-center"
+            style={{
+              width: 44, height: 36, borderRadius: "var(--radius-md)",
+              color: "var(--text-disabled)", background: "transparent", border: "none", cursor: "pointer",
+            }}
+          >
+            <Settings size={16} />
+          </button>
+          <button
+            className="flex items-center justify-center"
+            style={{
+              width: 44, height: 36, borderRadius: "var(--radius-md)",
+              color: "var(--text-disabled)", background: "transparent", border: "none", cursor: "pointer",
+            }}
+          >
+            <HelpCircle size={16} />
+          </button>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 flex overflow-hidden">
+        {children}
+      </div>
     </div>
   );
 }
 
-function ConfidenceIndicator({ level }: { level: "high" | "medium" | "low" }) {
-  const config = {
-    high: { label: "High confidence", color: "var(--success)" },
-    medium: { label: "Medium confidence", color: "var(--warning)" },
-    low: { label: "Low confidence", color: "var(--text-disabled)" },
+function InlineAsset({ name, type, certified }: { name: string; type: "table" | "dashboard" | "notebook"; certified?: boolean }) {
+  const [expanded, setExpanded] = useState(false);
+  const iconMap = {
+    table: <Table2 size={12} style={{ color: "var(--accent)" }} />,
+    dashboard: <LayoutDashboard size={12} style={{ color: "#A78BFA" }} />,
+    notebook: <FileCode size={12} style={{ color: "var(--success)" }} />,
   };
-  const c = config[level];
-  const dots = level === "high" ? 3 : level === "medium" ? 2 : 1;
 
   return (
-    <div className="flex items-center" style={{ gap: "var(--spacing-sm)", fontSize: "var(--font-size-sm)", color: c.color, marginBottom: "var(--spacing-sm)", paddingLeft: "40px" }}>
-      <div className="flex" style={{ gap: "2px" }}>
-        {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="rounded-full"
-            style={{ width: 5, height: 5, background: i <= dots ? "currentColor" : "var(--bg-code)" }}
-          />
-        ))}
-      </div>
-      {c.label}
+    <button
+      onClick={() => setExpanded(!expanded)}
+      className="inline-flex items-center transition-colors"
+      style={{
+        gap: "var(--spacing-xs)",
+        padding: "1px var(--spacing-sm)",
+        borderRadius: "var(--radius-md)",
+        background: "rgba(66, 153, 224, 0.08)",
+        border: "1px solid rgba(66, 153, 224, 0.15)",
+        color: "var(--accent-hover)",
+        fontSize: "var(--font-size-base)",
+        fontWeight: 600,
+        cursor: "pointer",
+        verticalAlign: "baseline",
+      }}
+    >
+      {iconMap[type]}
+      {name}
+      {certified && <Star size={9} fill="var(--warning)" style={{ color: "var(--warning)" }} />}
+    </button>
+  );
+}
+
+function ActionBar({ actions }: { actions: string[] }) {
+  return (
+    <div className="flex flex-wrap" style={{ gap: "var(--spacing-sm)", marginTop: "var(--spacing-mid)" }}>
+      {actions.map((action, i) => (
+        <button
+          key={i}
+          className="flex items-center transition-colors"
+          style={{
+            gap: "var(--spacing-xs)",
+            fontSize: "var(--font-size-sm)",
+            padding: "var(--spacing-xs) var(--spacing-mid)",
+            borderRadius: "var(--radius-md)",
+            background: "rgba(66, 153, 224, 0.1)",
+            border: "1px solid rgba(66, 153, 224, 0.2)",
+            color: "var(--accent)",
+            cursor: "pointer",
+          }}
+        >
+          {action === "Open with Genie Code" && <Sparkles size={11} />}
+          {action === "Create query" && <Plus size={11} />}
+          {action === "Open dashboard" && <LayoutDashboard size={11} />}
+          {action === "Open in notebook" && <FileCode size={11} />}
+          {action}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function TypingIndicator() {
+  return (
+    <div className="flex items-center" style={{ gap: "var(--spacing-xs)", paddingLeft: 40, marginBottom: "var(--spacing-lg)" }}>
+      <div className="typing-dot rounded-full" style={{ width: 5, height: 5, background: "var(--accent)" }} />
+      <div className="typing-dot rounded-full" style={{ width: 5, height: 5, background: "var(--accent)" }} />
+      <div className="typing-dot rounded-full" style={{ width: 5, height: 5, background: "var(--accent)" }} />
     </div>
   );
 }
@@ -156,16 +174,14 @@ function MessageBubble({ message, isLatest }: { message: Message; isLatest: bool
   if (message.role === "user") {
     return (
       <div className="flex justify-end" style={{ marginBottom: "var(--spacing-lg)" }}>
-        <div
-          style={{
-            background: "var(--bg-secondary)",
-            borderRadius: "var(--radius-full)",
-            padding: "var(--spacing-sm) var(--spacing-md)",
-            maxWidth: "80%",
-            fontSize: "var(--font-size-base)",
-            lineHeight: "var(--line-height-base)",
-          }}
-        >
+        <div style={{
+          background: "var(--bg-secondary)",
+          borderRadius: "var(--radius-full)",
+          padding: "var(--spacing-sm) var(--spacing-md)",
+          maxWidth: "75%",
+          fontSize: "var(--font-size-base)",
+          lineHeight: "var(--line-height-base)",
+        }}>
           {message.content}
         </div>
       </div>
@@ -174,44 +190,81 @@ function MessageBubble({ message, isLatest }: { message: Message; isLatest: bool
 
   return (
     <div className={isLatest ? "animate-fade-in" : ""} style={{ marginBottom: "var(--spacing-lg)" }}>
+      {/* AI header */}
       <div className="flex items-center" style={{ gap: "var(--spacing-sm)", marginBottom: "var(--spacing-sm)" }}>
-        <div
-          className="flex items-center justify-center"
-          style={{
-            width: 24,
-            height: 24,
-            borderRadius: "var(--radius-md)",
-            background: "linear-gradient(135deg, var(--accent), #7C3AED)",
-          }}
-        >
-          <Sparkles size={13} color="white" />
+        <div className="flex items-center justify-center" style={{
+          width: 24, height: 24, borderRadius: "var(--radius-md)",
+          background: "linear-gradient(135deg, var(--accent), #7C3AED)",
+        }}>
+          <Sparkles size={12} color="white" />
         </div>
         <span style={{ fontSize: "var(--font-size-sm)", color: "var(--text-secondary)" }}>Discovery</span>
+        {message.confidence && (
+          <span style={{
+            fontSize: "var(--font-size-sm)",
+            color: message.confidence === "high" ? "var(--success)" : message.confidence === "medium" ? "var(--warning)" : "var(--text-disabled)",
+          }}>
+            · {message.confidence} confidence
+          </span>
+        )}
       </div>
 
-      {message.confidence && <ConfidenceIndicator level={message.confidence} />}
-
-      <div style={{ paddingLeft: "40px" }}>
-        <p style={{
+      {/* Content */}
+      <div style={{ paddingLeft: 40 }}>
+        {/* Render content with inline assets */}
+        <div style={{
           fontSize: "var(--font-size-base)",
-          lineHeight: "1.6",
+          lineHeight: "1.7",
           color: "var(--text-secondary)",
-          whiteSpace: "pre-line",
-          marginBottom: "var(--spacing-mid)",
         }}>
-          {message.content}
-        </p>
+          {message.richContent ? (
+            message.richContent.map((block, i) => {
+              if (block.type === "text") {
+                return <span key={i}>{block.value}</span>;
+              }
+              if (block.type === "asset") {
+                return (
+                  <InlineAsset
+                    key={i}
+                    name={block.name!}
+                    type={block.assetType as "table" | "dashboard" | "notebook"}
+                    certified={block.certified}
+                  />
+                );
+              }
+              if (block.type === "break") {
+                return <br key={i} />;
+              }
+              if (block.type === "detail") {
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      fontSize: "var(--font-size-sm)",
+                      color: "var(--text-disabled)",
+                      marginTop: "var(--spacing-xs)",
+                      marginBottom: "var(--spacing-xs)",
+                      paddingLeft: "var(--spacing-md)",
+                      borderLeft: "2px solid var(--border)",
+                    }}
+                  >
+                    {block.value}
+                  </div>
+                );
+              }
+              return null;
+            })
+          ) : (
+            <p style={{ whiteSpace: "pre-line" }}>{message.content}</p>
+          )}
+        </div>
 
-        {message.assets && message.assets.length > 0 && (
-          <div className="flex flex-col" style={{ gap: "var(--spacing-sm)", marginBottom: "var(--spacing-mid)" }}>
-            {message.assets.map((asset, i) => (
-              <AssetCard key={i} asset={asset} />
-            ))}
-          </div>
-        )}
+        {/* Action buttons */}
+        {message.actions && <ActionBar actions={message.actions} />}
 
+        {/* Follow-up suggestions */}
         {message.followUp && (
-          <div className="flex flex-wrap" style={{ gap: "var(--spacing-sm)", marginTop: "var(--spacing-mid)" }}>
+          <div className="flex flex-wrap" style={{ gap: "var(--spacing-sm)", marginTop: "var(--spacing-md)" }}>
             {message.followUp.map((q, i) => (
               <button
                 key={i}
@@ -223,15 +276,10 @@ function MessageBubble({ message, isLatest }: { message: Message; isLatest: bool
                   border: "1px solid var(--bg-code)",
                   color: "var(--text-secondary)",
                   background: "transparent",
+                  cursor: "pointer",
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = "var(--text-primary)";
-                  e.currentTarget.style.borderColor = "var(--text-disabled)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = "var(--text-secondary)";
-                  e.currentTarget.style.borderColor = "var(--bg-code)";
-                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.borderColor = "var(--text-disabled)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-secondary)"; e.currentTarget.style.borderColor = "var(--bg-code)"; }}
               >
                 {q}
               </button>
@@ -258,7 +306,6 @@ export default function AgenticDiscovery() {
 
   const handleSubmit = () => {
     if (!input.trim()) return;
-
     const userMessage: Message = { role: "user", content: input.trim() };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
@@ -274,7 +321,7 @@ export default function AgenticDiscovery() {
       } else {
         simulateResponse({
           role: "assistant",
-          content: "I can help you find assets in your workspace. Try describing what you're looking for — for example:\n\n• \"What tables should I use to analyze revenue by product line?\"\n• \"Find dashboards about customer churn\"\n• \"I need data sources for a new pipeline\"",
+          content: "I can help you find assets in your workspace. Try describing what you're looking for — for example, \"what tables should I use to analyze revenue by product line?\"",
           confidence: "low" as const,
         });
       }
@@ -293,7 +340,7 @@ export default function AgenticDiscovery() {
     setTimeout(() => {
       setIsTyping(false);
       setMessages((prev) => [...prev, response]);
-    }, 1200 + Math.random() * 800);
+    }, 1500 + Math.random() * 1000);
   };
 
   const scenarios = [
@@ -303,51 +350,34 @@ export default function AgenticDiscovery() {
   ];
 
   return (
-    <div className="h-screen flex">
-      {/* Sidebar */}
+    <DatabricksShell>
+      {/* Thread sidebar */}
       <div
-        className="flex flex-col"
+        className="flex flex-col shrink-0"
         style={{
-          width: 240,
+          width: 220,
           background: "var(--bg-primary)",
           borderRight: "1px solid var(--border)",
           padding: "var(--spacing-md) var(--spacing-sm)",
         }}
       >
-        <div className="flex items-center" style={{ gap: "var(--spacing-sm)", padding: "var(--spacing-sm)", marginBottom: "var(--spacing-md)" }}>
-          <div
-            className="flex items-center justify-center"
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: "var(--radius-lg)",
-              background: "linear-gradient(135deg, var(--accent), #7C3AED)",
-            }}
-          >
-            <Sparkles size={14} color="white" />
-          </div>
-          <span className="font-semibold" style={{ fontSize: "var(--font-size-base)" }}>Discovery</span>
-        </div>
-
         <button
-          className="flex items-center w-full transition-colors rounded"
+          className="flex items-center w-full transition-colors"
           style={{
-            gap: "var(--spacing-sm)",
-            padding: "var(--spacing-sm)",
-            fontSize: "var(--font-size-base)",
-            color: "var(--accent)",
-            background: "transparent",
-            border: "none",
-            borderRadius: "var(--radius-md)",
+            gap: "var(--spacing-sm)", padding: "var(--spacing-sm) var(--spacing-sm)",
+            fontSize: "var(--font-size-base)", color: "var(--accent)",
+            background: "transparent", border: "none", borderRadius: "var(--radius-md)", cursor: "pointer",
           }}
         >
           <Plus size={14} /> New conversation
         </button>
 
         <div style={{ marginTop: "var(--spacing-lg)" }}>
-          <span style={{ fontSize: "var(--font-size-sm)", color: "var(--text-disabled)", padding: "var(--spacing-sm)", display: "block" }}>Recent</span>
+          <span style={{ fontSize: "var(--font-size-sm)", color: "var(--text-disabled)", padding: "0 var(--spacing-sm)", display: "block", marginBottom: "var(--spacing-xs)" }}>
+            Recent
+          </span>
           <div
-            className="rounded transition-colors"
+            className="transition-colors"
             style={{
               padding: "var(--spacing-sm)",
               fontSize: "var(--font-size-base)",
@@ -359,28 +389,36 @@ export default function AgenticDiscovery() {
           >
             Revenue by product line
           </div>
+          <div
+            className="transition-colors"
+            style={{
+              padding: "var(--spacing-sm)",
+              fontSize: "var(--font-size-base)",
+              color: "var(--text-secondary)",
+              borderRadius: "var(--radius-md)",
+              cursor: "pointer",
+              marginTop: "1px",
+            }}
+          >
+            Churn dashboards
+          </div>
         </div>
       </div>
 
-      {/* Main chat area */}
-      <div className="flex-1 flex flex-col" style={{ background: "var(--bg-primary)" }}>
+      {/* Chat area */}
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Messages */}
         <div className="flex-1 overflow-y-auto scrollbar-thin" style={{ padding: "var(--spacing-md) var(--spacing-lg)" }}>
           {messages.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center" style={{ maxWidth: 560, margin: "0 auto" }}>
-              <div
-                className="flex items-center justify-center"
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: "var(--radius-lg)",
-                  background: "linear-gradient(135deg, var(--accent), #7C3AED)",
-                  marginBottom: "var(--spacing-md)",
-                }}
-              >
-                <Sparkles size={22} color="white" />
+            <div className="h-full flex flex-col items-center justify-center" style={{ maxWidth: 520, margin: "0 auto" }}>
+              <div className="flex items-center justify-center" style={{
+                width: 44, height: 44, borderRadius: "var(--radius-lg)",
+                background: "linear-gradient(135deg, var(--accent), #7C3AED)",
+                marginBottom: "var(--spacing-md)",
+              }}>
+                <Sparkles size={20} color="white" />
               </div>
-              <h2 className="font-semibold" style={{ fontSize: "var(--font-size-lg)", marginBottom: "var(--spacing-sm)" }}>
+              <h2 className="font-semibold" style={{ fontSize: "var(--font-size-lg)", marginBottom: "var(--spacing-xs)" }}>
                 What are you looking for?
               </h2>
               <p style={{ fontSize: "var(--font-size-base)", color: "var(--text-secondary)", textAlign: "center", marginBottom: "var(--spacing-xl)" }}>
@@ -390,28 +428,16 @@ export default function AgenticDiscovery() {
                 {scenarios.map((s, i) => (
                   <button
                     key={i}
-                    onClick={() => {
-                      setInput(s);
-                      inputRef.current?.focus();
-                    }}
-                    className="flex items-center text-left transition-colors group"
+                    onClick={() => { setInput(s); inputRef.current?.focus(); }}
+                    className="flex items-center text-left transition-colors"
                     style={{
-                      gap: "var(--spacing-mid)",
-                      fontSize: "var(--font-size-base)",
+                      gap: "var(--spacing-mid)", fontSize: "var(--font-size-base)",
                       padding: "var(--spacing-mid) var(--spacing-md)",
-                      borderRadius: "var(--radius-lg)",
-                      border: "1px solid var(--border)",
-                      background: "var(--bg-secondary)",
-                      color: "var(--text-secondary)",
+                      borderRadius: "var(--radius-lg)", border: "1px solid var(--border)",
+                      background: "var(--bg-secondary)", color: "var(--text-secondary)", cursor: "pointer",
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "var(--bg-code)";
-                      e.currentTarget.style.color = "var(--text-primary)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "var(--border)";
-                      e.currentTarget.style.color = "var(--text-secondary)";
-                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--bg-code)"; e.currentTarget.style.color = "var(--text-primary)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-secondary)"; }}
                   >
                     <ChevronRight size={13} style={{ color: "var(--text-disabled)" }} />
                     {s}
@@ -433,18 +459,13 @@ export default function AgenticDiscovery() {
         {/* Input */}
         <div style={{ padding: "var(--spacing-md) var(--spacing-lg)", borderTop: "1px solid var(--border)" }}>
           <div style={{ maxWidth: 900, margin: "0 auto" }}>
-            <div
-              className="flex items-center transition-colors"
-              style={{
-                gap: "var(--spacing-mid)",
-                background: "var(--bg-secondary)",
-                border: "1px solid var(--border)",
-                borderRadius: 24,
-                padding: "var(--spacing-mid) var(--spacing-md)",
-                boxShadow: "0px 4px 16px rgba(0,0,0,0.12)",
-              }}
-            >
-              <Search size={16} style={{ color: "var(--text-placeholder)", flexShrink: 0 }} />
+            <div className="flex items-center" style={{
+              gap: "var(--spacing-mid)", background: "var(--bg-secondary)",
+              border: "1px solid var(--border)", borderRadius: 24,
+              padding: "var(--spacing-mid) var(--spacing-md)",
+              boxShadow: "0px 4px 16px rgba(0,0,0,0.12)",
+            }}>
+              <Search size={15} style={{ color: "var(--text-placeholder)", flexShrink: 0 }} />
               <input
                 ref={inputRef}
                 type="text"
@@ -453,34 +474,23 @@ export default function AgenticDiscovery() {
                 onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
                 placeholder="Describe what you're looking for..."
                 className="flex-1 bg-transparent outline-none"
-                style={{
-                  fontSize: "var(--font-size-base)",
-                  lineHeight: "var(--line-height-base)",
-                  color: "var(--text-primary)",
-                }}
+                style={{ fontSize: "var(--font-size-base)", lineHeight: "var(--line-height-base)", color: "var(--text-primary)" }}
               />
               <button
                 onClick={handleSubmit}
                 disabled={!input.trim()}
                 className="flex items-center justify-center transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: "var(--radius-full)",
-                  background: "var(--accent)",
-                  border: "none",
-                  flexShrink: 0,
+                  width: 26, height: 26, borderRadius: "var(--radius-full)",
+                  background: "var(--accent)", border: "none", flexShrink: 0, cursor: "pointer",
                 }}
               >
-                <ArrowUp size={14} color="white" />
+                <ArrowUp size={13} color="white" />
               </button>
             </div>
-            <p style={{ fontSize: "var(--font-size-sm)", color: "var(--text-disabled)", textAlign: "center", marginTop: "var(--spacing-sm)" }}>
-              Reasons over metadata, lineage, and usage patterns to find what you need
-            </p>
           </div>
         </div>
       </div>
-    </div>
+    </DatabricksShell>
   );
 }
